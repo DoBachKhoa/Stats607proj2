@@ -46,9 +46,29 @@ class NormalMeanHypotheses(MultipleHypotheses):
         else: return np.random.normal(self.means, shape=(size, self.num_hypo))
 
 
+class MutiTest():
+    '''
+    Class of multiple testing rejection methods for FWER and FDR control
+    '''
+    @staticmethod
+    def BonferroniMethod(p_values, alpha, m=None):
+        if m == None: m = p_values.shape(-1)
+        rejection = (p_values > (alpha/m)).astype('int')
 
+    @staticmethod
+    def HochbergMethod(p_values, alpha):
+        m = p_values.shape(-1)
+        pass
 
+    @staticmethod
+    def BHMethod(p_values, alpha):
+        pass
 
-    
+    @staticmethod
+    def _HochbergSimple(p_values, alpha):
+        pass
 
-    
+    @staticmethod
+    def _BHSimple(p_values, alpha):
+        m = p_values.shape(-1)
+        pass
