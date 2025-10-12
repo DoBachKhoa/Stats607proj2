@@ -53,22 +53,41 @@ class MutiTest():
     @staticmethod
     def BonferroniMethod(p_values, alpha, m=None):
         if m == None: m = p_values.shape(-1)
-        rejection = (p_values > (alpha/m)).astype('int')
-
-    @staticmethod
-    def HochbergMethod(p_values, alpha):
-        m = p_values.shape(-1)
-        pass
-
-    @staticmethod
-    def BHMethod(p_values, alpha):
-        pass
+        rejection = (p_values <= (alpha/m)).astype('int')
 
     @staticmethod
     def _HochbergSimple(p_values, alpha):
-        pass
+        m = len(p_values)
+        ordered_p_values = list(enumerate(list(p_values)))
+        ordered_p_values.sort(key = lambda x: x[1])
+        output = np.repeat(0, m, dtype='int')
+        for i in range(m-1, -1, -1):
+            if ordered_p_values[i][1] <= alpha/(m-i):
+                for j in range(i+1): output[ordered_p_values[j][0]] = 1
+                return output
+        return output
 
     @staticmethod
     def _BHSimple(p_values, alpha):
-        m = p_values.shape(-1)
-        pass
+        m = len(p_values)
+        ordered_p_values = list(enumerate(list(p_values)))
+        ordered_p_values.sort(key = lambda x: x[1])
+        output = np.repeat(0, m, dtype='int')
+        for i in range(m, 0, -1):
+            if ordered_p_values[i-1][1] <= alpha*i/m:
+                for j in range(i): output[ordered_p_values[j][0]] = 1
+                return output
+        return output
+
+    @staticmethod
+    def _applyMultipleTime(p_values, alpha, method):
+        if len(p_values.shape) == 1: return method(p_values, alpha)
+        else: return np.array([method(case, alpha) for case in p_values])
+
+    @staticmethod
+    def HochbergMethod(p_values, alpha):
+        return _applyMultipleTime(p_values, alpha, _HochbergSimple)
+
+    @staticmethod
+    def BHMethod(p_values, alpha):
+        return _applyMultipleTime(p_values, alpha, _BHSimple)
