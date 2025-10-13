@@ -5,7 +5,7 @@ class MultipleHypotheses:
     '''
     Base multiple hypothesis class
     '''
-    def __init__(self, num_hypo=1, num_nul=1):
+    def __init__(self, num_hypo=1, num_null=1):
         assert num_hypo >= num_null, \
             "Number of null hypotheses cannot surpass number of hypotheses"
         self.num_hypo = num_hypo
@@ -15,8 +15,8 @@ class MultipleHypotheses:
     def generate_data(self, size=None):
         raise NotImplementedError
 
-    def generate_p_values(sefl, test):
-        return test(self.generate_data())
+    def generate_p_values(self, test, size=None):
+        return test(self.generate_data(size=size))
 
 class StandardNullHypotheses(MultipleHypotheses):
     '''
@@ -26,7 +26,7 @@ class StandardNullHypotheses(MultipleHypotheses):
     def __init__(self, num_hypo=1):
         super().__init__(self, num_hypo=num_hypo, num_null=0)
         
-    def generate_data(self, size=None)
+    def generate_data(self, size=None):
         if shape == None: return np.random.uniform(self.num_hypo)
         else: return np.random.uniform(size = (size, self.num_hypo))
 
@@ -42,25 +42,25 @@ class NormalMeanHypotheses(MultipleHypotheses):
         self.sigma = sigma
 
     def generate_data(self, size=None):
-        if shape == None: return np.random.normal(self.means, self.sigma)
-        else: return np.random.normal(self.means, shape=(size, self.num_hypo))
+        if size == None: return np.random.normal(self.means, self.sigma)
+        else: return np.random.normal(self.means, size=(size, self.num_hypo))
 
 
-class MutiTest():
+class MultiTest():
     '''
     Class of multiple testing rejection methods for FWER and FDR control
     '''
     @staticmethod
     def BonferroniMethod(p_values, alpha, m=None):
-        if m == None: m = p_values.shape(-1)
-        rejection = (p_values <= (alpha/m)).astype('int')
+        if m == None: m = p_values.shape[-1]
+        return (p_values <= (alpha/m)).astype('int')
 
     @staticmethod
     def _HochbergSimple(p_values, alpha):
         m = len(p_values)
         ordered_p_values = list(enumerate(list(p_values)))
         ordered_p_values.sort(key = lambda x: x[1])
-        output = np.repeat(0, m, dtype='int')
+        output = np.repeat(0, m).astype('int')
         for i in range(m-1, -1, -1):
             if ordered_p_values[i][1] <= alpha/(m-i):
                 for j in range(i+1): output[ordered_p_values[j][0]] = 1
@@ -72,7 +72,7 @@ class MutiTest():
         m = len(p_values)
         ordered_p_values = list(enumerate(list(p_values)))
         ordered_p_values.sort(key = lambda x: x[1])
-        output = np.repeat(0, m, dtype='int')
+        output = np.repeat(0, m).astype('int')
         for i in range(m, 0, -1):
             if ordered_p_values[i-1][1] <= alpha*i/m:
                 for j in range(i): output[ordered_p_values[j][0]] = 1
@@ -80,14 +80,14 @@ class MutiTest():
         return output
 
     @staticmethod
-    def _applyMultipleTime(p_values, alpha, method):
+    def _applyMultipleTimes(p_values, alpha, method):
         if len(p_values.shape) == 1: return method(p_values, alpha)
         else: return np.array([method(case, alpha) for case in p_values])
 
     @staticmethod
     def HochbergMethod(p_values, alpha):
-        return _applyMultipleTime(p_values, alpha, _HochbergSimple)
+        return MultiTest._applyMultipleTimes(p_values, alpha, MultiTest._HochbergSimple)
 
     @staticmethod
     def BHMethod(p_values, alpha):
-        return _applyMultipleTime(p_values, alpha, _BHSimple)
+        return MultiTest._applyMultipleTimes(p_values, alpha, MultiTest._BHSimple)
