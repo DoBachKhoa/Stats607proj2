@@ -2,7 +2,8 @@ import math
 import numpy as np
 from scipy.stats import norm
 from methods import NormalMeanHypotheses, MultiTest
-from utils import testing_result, distribute_means_BH_exp, generate_filename
+from utils import testing_result, distribute_means_BH_exp, \
+                  generate_filename_BH_exp, generate_params_BH_exp
 from tqdm import tqdm
 
 dict_methods = {
@@ -27,7 +28,7 @@ def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, sav
     
     # Save in csv
     if saving:
-        filename = generate_filename(L, m_0, m, mode, num_rep, method, criterion)
+        filename = generate_filename_BH_exp(L, m_0, m, mode, num_rep, method, criterion)
         np.save('results/raw/'+filename, result)
     return result
 
@@ -36,6 +37,7 @@ if __name__ == '__main__':
     m_s = [4, 8, 16, 32, 64]
     ratio_s = [0., 0.25, 0.5, 0.75]
     num_rep = 2000
+    mode_s = ['D', 'E', 'I']
     methods = ['Bonferroni', 'Hochberg', 'BH']
     criterion = 'power'
     alpha = 0.05
@@ -48,13 +50,7 @@ if __name__ == '__main__':
     print(f' criterion: {criterion}')
     print(f' alpha: {alpha}')
     print('================================================')
-    def generate_params():
-        for L in L_s:
-            for m in m_s:
-                for r in ratio_s:
-                    for mode in ['I', 'D', 'E']:
-                        for method in methods:
-                            yield (L, m, r, mode, method)
-    for (L, m, r, mode, method) in tqdm(list(generate_params())):
+    generator = generate_params_BH_exp(L_s, m_s, rato_s, mode_s, methods)
+    for (L, m, r, mode, method) in tqdm(list(generator)):
         m_0 = int(np.rint(m*r).astype('int'))
         simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=alpha, saving=True)

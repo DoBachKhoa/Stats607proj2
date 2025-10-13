@@ -75,6 +75,16 @@ def _distribute_mean_D(m_1, L):
     if r > 8: output[1][1] += 1
     return output
 
+def mean_and_se(nums):
+    '''
+    Return the mean and empirical se of number in nums
+    '''
+    l = len(nums)
+    mean = nums.sum()/l
+    std = np.sqrt(np.sum((nums-l)*(num-l))/(l-1))
+    se = std/np.sqrt(l)
+    return mean, se
+
 def distribute_means_BH_exp(m_1, L, mode):
     '''
     Distributes alternative hypotheses mean for BH paper's experiment
@@ -88,5 +98,14 @@ def distribute_means_BH_exp(m_1, L, mode):
             output.append(val)
     return output
 
-def generate_filename(L, m_0, m, mode, num_rep, method, criterion):
-    return f'exp_output_L{L}_m0{m_0}_m{m}_mode{mode}_nrep{num_rep}_method{method}_criterion{criterion}.npy'
+def generate_filename_BH_exp(L, m_0, m, mode, num_rep, method, criterion):
+    L = np.round(float(L), 1)
+    return f'exp_output_L{L}_mo{m_0}_m{m}_mode{mode}_nrep{num_rep}_method{method}_criterion{criterion}.npy'
+
+def generate_params_BH_exp(L_s, m_s, ratio_s, mode_s, method_s):
+    for L in L_s:
+        for r in ratio_s:
+            for mode in ['I', 'D', 'E']:
+                for method in method_s:
+                    for m in m_s: # Intentionally put m last to help parsing
+                        yield (L, m, r, mode, method)
