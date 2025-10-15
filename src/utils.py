@@ -21,7 +21,9 @@ def testing_result(true_result, test_result, criteria=('power')):
     T = m - m_0 - S
     U = m - R - T
     V = R - S
-    if 'power' in criteria: output['power'] = divide_0div0(S, R, 1)
+    if 'power' in criteria:
+        assert m_0 < m, 'No non-null hypothesis, cannot calculate power'
+        output['power'] = S / (m-m_0)
     if 'type1' in criteria: output['type1'] = V
     if 'type2' in criteria: output['type2'] = T
     if 'fdr' in criteria: output['fdr'] = divide_0div0(V, R, 0)
@@ -79,9 +81,10 @@ def mean_and_se(nums):
     '''
     Return the mean and empirical se of number in nums
     '''
+    assert len(nums.shape) == 1, 'Input has dimension not equal 1'
     l = len(nums)
     mean = nums.sum()/l
-    std = np.sqrt(np.sum((nums-l)*(num-l))/(l-1))
+    std = np.sqrt(np.sum((nums-mean)*(nums-mean))/(l-1))
     se = std/np.sqrt(l)
     return mean, se
 
@@ -102,10 +105,13 @@ def generate_filename_BH_exp(L, m_0, m, mode, num_rep, method, criterion):
     L = np.round(float(L), 1)
     return f'exp_output_L{L}_mo{m_0}_m{m}_mode{mode}_nrep{num_rep}_method{method}_criterion{criterion}.npy'
 
+def generate_jsonname_BH_exp(L):
+    return f'exp_proceeded_output_means_L{L}.json', f'exp_proceeded_output_ses_L{L}.json'
+
 def generate_params_BH_exp(L_s, m_s, ratio_s, mode_s, method_s):
     for L in L_s:
         for r in ratio_s:
-            for mode in ['I', 'D', 'E']:
+            for mode in mode_s:
                 for method in method_s:
                     for m in m_s: # Intentionally put m last to help parsing
                         yield (L, m, r, mode, method)

@@ -17,7 +17,8 @@ def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, sav
     # Generate data
     alt_means = distribute_means_BH_exp(m-m_0, L, mode)
     generator = NormalMeanHypotheses(m_0, alt_means, sigma=1.)
-    p_values = generator.generate_p_values(norm.cdf, size=num_rep)
+    test = lambda data: 1-2*np.abs(norm.cdf(data)-0.5)
+    p_values = generator.generate_p_values(test, size=num_rep)
 
     # Run hypothesis test
     control_method = dict_methods[method]
@@ -29,13 +30,13 @@ def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, sav
     # Save in csv
     if saving:
         filename = generate_filename_BH_exp(L, m_0, m, mode, num_rep, method, criterion)
-        np.save('results/raw/'+filename, result)
+        np.save('results/raw/'+filename, result[criterion])
     return result
 
 if __name__ == '__main__':
     L_s = [5., 10.]
     m_s = [4, 8, 16, 32, 64]
-    ratio_s = [0., 0.25, 0.5, 0.75]
+    ratio_s = ['0.00', '0.25', '0.50', '0.75']
     num_rep = 2000
     mode_s = ['D', 'E', 'I']
     methods = ['Bonferroni', 'Hochberg', 'BH']
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     print(f' criterion: {criterion}')
     print(f' alpha: {alpha}')
     print('================================================')
-    generator = generate_params_BH_exp(L_s, m_s, rato_s, mode_s, methods)
+    generator = generate_params_BH_exp(L_s, m_s, ratio_s, mode_s, methods)
     for (L, m, r, mode, method) in tqdm(list(generator)):
-        m_0 = int(np.rint(m*r).astype('int'))
+        m_0 = int(np.rint(m*float(r)).astype('int'))
         simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=alpha, saving=True)

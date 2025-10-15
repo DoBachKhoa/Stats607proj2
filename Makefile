@@ -27,25 +27,25 @@ test : venv
 
 # Simulate 
 $(RAW_RESULT_DIR) : venv
-	mkdir $(RESULT_DIR)
-	mkdir $(RAW_RESULT_DIR)
+	mkdir -p $(RESULT_DIR)
+	mkdir -p $(RAW_RESULT_DIR)
 	$(VENV_PY) src/simulation.py
 	touch $(RAW_RESULT_DIR)
-simulate : $(RAW_RESULT_DIR)
+simulate : $(RAW_RESULT_DIR) src/simulate.py
 
 # Run analyze
 $(PROC_RESULT_DIR): $(RAW_RESULT_DIR)
-	mkdir $(PROC_RESULT_DIR)
+	mkdir -p $(PROC_RESULT_DIR)
 	$(VENV_PY) src/analyze.py
 	touch $(PROC_RESULT_DIR)
-analyze : $(PROC_RESULT_DIR)
+analyze : $(PROC_RESULT_DIR) src/analyze.py
 
 # Run plotting figures
 $(PLOT_RESULT_DIR): $(PROC_RESULT_DIR)
-	mkdir $(PLOT_RESULT_DIR)
+	mkdir -p $(PLOT_RESULT_DIR)
 	$(VENV_PY) src/plotting.py
 	touch $(PLOT_RESULT_DIR)
-figures : $(PLOT_RESULT_DIR)
+figures : $(PLOT_RESULT_DIR) plotting.py
 
 # Clean ups
 clean : 
@@ -53,6 +53,3 @@ clean :
 	rm -rf $(RESULT_DIR)
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
-
-
-
