@@ -1,4 +1,4 @@
-.PHONY: all test clean
+.PHONY: all venv test simulate analyze figures clean
 
 # Abbreviations
 PY := python3
@@ -26,26 +26,26 @@ venv : $(VENV_DIR)
 test : venv
 
 # Simulate 
-$(RAW_RESULT_DIR) : venv
+$(RAW_RESULT_DIR) : $(VENV_DIR) src/analyze.py
 	mkdir -p $(RESULT_DIR)
 	mkdir -p $(RAW_RESULT_DIR)
 	$(VENV_PY) src/simulation.py
 	touch $(RAW_RESULT_DIR)
-simulate : $(RAW_RESULT_DIR) src/simulate.py
+simulate : $(RAW_RESULT_DIR) 
 
 # Run analyze
-$(PROC_RESULT_DIR): $(RAW_RESULT_DIR)
+$(PROC_RESULT_DIR): $(RAW_RESULT_DIR) src/analyze.py
 	mkdir -p $(PROC_RESULT_DIR)
 	$(VENV_PY) src/analyze.py
 	touch $(PROC_RESULT_DIR)
-analyze : $(PROC_RESULT_DIR) src/analyze.py
+analyze : $(PROC_RESULT_DIR) 
 
 # Run plotting figures
-$(PLOT_RESULT_DIR): $(PROC_RESULT_DIR)
+$(PLOT_RESULT_DIR): $(PROC_RESULT_DIR) src/plotting.py
 	mkdir -p $(PLOT_RESULT_DIR)
 	$(VENV_PY) src/plotting.py
 	touch $(PLOT_RESULT_DIR)
-figures : $(PLOT_RESULT_DIR) plotting.py
+figures : $(PLOT_RESULT_DIR)
 
 # Clean ups
 clean : 

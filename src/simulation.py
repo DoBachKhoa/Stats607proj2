@@ -2,7 +2,7 @@ import math
 import numpy as np
 from scipy.stats import norm
 from methods import NormalMeanHypotheses, MultiTest
-from utils import testing_result, distribute_means_BH_exp, \
+from utils import testing_measure, distribute_means_BH_exp, \
                   generate_filename_BH_exp, generate_params_BH_exp
 from tqdm import tqdm
 
@@ -25,7 +25,7 @@ def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, sav
     decision = control_method(p_values, alpha)
     ground_truth = np.array([0]*m_0+[1]*(m-m_0))
     # print(ground_truth, ground_truth.shape, decision.shape, L, m_0, m, mode, ' AAA')
-    result = testing_result(ground_truth, decision)
+    result = testing_measure(ground_truth, decision)
     
     # Save in csv
     if saving:

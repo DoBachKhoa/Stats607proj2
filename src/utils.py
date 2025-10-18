@@ -12,7 +12,17 @@ def divide_0div0(numerator, denominator, alt_value=0):
     result[zero_divide_zero_mask] = alt_value
     return result
 
-def testing_result(true_result, test_result, criteria=('power')):
+def testing_measure(true_result, test_result, criteria=('power')):
+    '''
+    Matches the ground truth which is a 1d array of 1's and 0's
+    indicating not null and null hypotheses
+    with rows of test result
+    each row is 1 for rejection and 0 for not rejecting
+    supported criteria are: 'power', 'type1', 'type2', 'fdr', 'm', 'm_0'
+    'm' for the number of ground truth hypotheses
+    'm_0' for the number of groud truth null hypotheses
+    true_result is 1d, test_result could be 1d or 2d; the row length must be the same
+    '''
     output = dict()
     m = true_result.shape[0]
     m_0 = m - np.sum(true_result, axis=-1)
@@ -38,7 +48,7 @@ def _distribute_mean_E(m_1, L):
     '''
     d, r = divmod(m_1, 4)
     output = [[L/4, d], [L/2, d], [3*L/4, d], [L, d]]
-    for i in range(r): output[i][1] += 1
+    for i in range(r): output[-i-1][1] += 1
     return output
 
 def _distribute_mean_I(m_1, L):
@@ -107,6 +117,9 @@ def generate_filename_BH_exp(L, m_0, m, mode, num_rep, method, criterion):
 
 def generate_jsonname_BH_exp(L):
     return f'exp_proceeded_output_means_L{L}.json', f'exp_proceeded_output_ses_L{L}.json'
+
+def generate_plotname_BH_exp(L):
+    return f'exp_plot_means_L{L}.png', f'exp_plot_ses_L{L}.png'
 
 def generate_params_BH_exp(L_s, m_s, ratio_s, mode_s, method_s):
     for L in L_s:
