@@ -15,8 +15,10 @@ dict_methods = {
 def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, saving=True):
     
     # Generate data
+    seed = 17
+    rng = np.random.default_rng(seed=seed)
     alt_means = distribute_means_BH_exp(m-m_0, L, mode)
-    generator = NormalMeanHypotheses(m_0, alt_means, sigma=1.)
+    generator = NormalMeanHypotheses(m_0, alt_means, sigma=1., rng=rng)
     test = lambda data: 1-2*np.abs(norm.cdf(data)-0.5)
     p_values = generator.generate_p_values(test, size=num_rep)
 

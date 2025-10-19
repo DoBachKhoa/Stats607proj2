@@ -23,11 +23,11 @@ $(VENV_DIR) : requirements.txt # check requirement changes
 venv : $(VENV_DIR)
 
 # Run tests
-test : $(VENV_DIR)
+test : $(VENV_DIR) src/methods.py src/analyze.py
 	$(VENV_PY) -m pytest src/testcorrectness.py
 
 # Simulate 
-$(RAW_RESULT_DIR) : $(VENV_DIR) src/analyze.py
+$(RAW_RESULT_DIR) : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py
 	mkdir -p $(RESULT_DIR)
 	mkdir -p $(RAW_RESULT_DIR)
 	$(VENV_PY) src/simulation.py
@@ -54,3 +54,4 @@ clean :
 	rm -rf $(RESULT_DIR)
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
+	find . -type d -name ".pytest_cache"  -exec rm -rf {} +

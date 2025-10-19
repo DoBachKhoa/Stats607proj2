@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 from utils import generate_jsonname_BH_exp, generate_plotname_BH_exp
 
-def plot_BH_exp(results, ratio_s, mode_s, m_s, method_s, filename, 
-                plotname, rownames, colnames, 
+def plot_BH_exp(results, ratio_s, mode_s, m_s, method_s, 
+                filename, plotname, rownames, colnames, 
                 patterns=None, colors=None, xticks=None, yticks=None):
     m = len(ratio_s)
     n = len(mode_s)

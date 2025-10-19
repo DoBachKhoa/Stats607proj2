@@ -5,12 +5,14 @@ class MultipleHypotheses:
     '''
     Base multiple hypothesis class
     '''
-    def __init__(self, num_hypo=1, num_null=1):
+    def __init__(self, num_hypo=1, num_null=1, rng=None):
         assert num_hypo >= num_null, \
             "Number of null hypotheses cannot surpass number of hypotheses"
         self.num_hypo = num_hypo
         self.num_null = num_null
         self.num_alt  = num_hypo - num_null
+        if rng is not None: self.rng = rng
+        else: self.rng = np.random.default_rng()
 
     def generate_data(self, size=None):
         raise NotImplementedError
@@ -23,27 +25,27 @@ class StandardNullHypotheses(MultipleHypotheses):
     Simple uniform hypothesis family
     Generated data can also be thought of as p values under the null
     '''
-    def __init__(self, num_hypo=1):
-        super().__init__(self, num_hypo=num_hypo, num_null=0)
+    def __init__(self, num_hypo=1, rng=None):
+        super().__init__(self, num_hypo=num_hypo, num_null=0, rng=rng)
         
     def generate_data(self, size=None):
-        if shape == None: return np.random.uniform(self.num_hypo)
-        else: return np.random.uniform(size = (size, self.num_hypo))
+        if size == None: return self.rng.uniform(0, 1, self.num_hypo)
+        else: return self.rng.uniform(0, 1, size = (size, self.num_hypo))
 
 class NormalMeanHypotheses(MultipleHypotheses):
     '''
     Similar-variance 1D Normal distribution hypotheses
     The null indicates that the mean is 0
     '''
-    def __init__(self, num_null, alt_means, sigma=1.):
+    def __init__(self, num_null, alt_means, sigma=1., rng=None):
         num_hypo = num_null + len(alt_means)
-        super().__init__(num_hypo, num_null)
+        super().__init__(num_hypo, num_null, rng = rng)
         self.means = np.array([0.]*num_null+list(alt_means))
         self.sigma = sigma
 
     def generate_data(self, size=None):
-        if size == None: return np.random.normal(self.means, self.sigma)
-        else: return np.random.normal(self.means, size=(size, self.num_hypo))
+        if size == None: return self.rng.normal(self.means, self.sigma, size=self.num_hypo)
+        else: return self.rng.normal(self.means, self.sigma, size=(size, self.num_hypo))
 
 
 class MultiTest():
