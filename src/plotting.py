@@ -37,7 +37,7 @@ def plot_BH_exp(results, ratio_s, mode_s, m_s, method_s,
     plt.close()
 
 def plot_BH_exp_ses_hist(results, ratio_s, mode_s, m_s, method_s,
-                         filename='histogram.png', plotname=None, colors=None, plot_params=dict()):
+                         filename='histogram.png', plotname=None, colors=None, transparency=0.5, bins=20):
     # Load data from dictionary `results`
     m = len(ratio_s)
     n = len(mode_s)
@@ -47,11 +47,18 @@ def plot_BH_exp_ses_hist(results, ratio_s, mode_s, m_s, method_s,
             for method in method_s:
                 for num in results[ratio][mode][method]:
                     output.setdefault(method, []).append(num)
+                
+    # Handling bin positionings
+    left_limit = np.min([np.min(l) for l in output.values()])-1e-6
+    right_limit = np.max([np.max(l) for l in output.values()])+1e-6
+    offset = (right_limit-left_limit)/bins/2./len(method_s)
 
     # Plotting
-    for method in method_s:
-        if colors is not None: plot_params['color'] = colors[method]
-        plt.hist(output[method], label=method, **plot_params)
+    for i, method in enumerate(method_s):
+        bin_positions = np.linspace(left_limit-i*offset, right_limit+(len(method_s)-1-i)*offset, bins+1)
+        # print(bin_positions, offset)
+        if colors: plt.hist(output[method], label=method, alpha=transparency, color=colors[method], bins=bin_positions)
+        else: plt.hist(output[method], label=method, alpha=transparency)
     if plotname: plt.title(plotname)
     plt.legend()
     plt.grid(True, linestyle='--', alpha=0.7)
@@ -79,16 +86,16 @@ if __name__ == '__main__':
             plot_BH_exp(means, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'], 
                         filename = 'results/plots'+plotname_means,  
                         plotname = 'Plot of Power as a function of number of hypotheses', 
-                        rownames = ['0% null', '25% null', '50% null', '75% null'],
-                        colnames = ['Config D', 'Config E', 'Config I'],
+                        rownames = [str(np.round(float(ratio)*100, 1))+'% null' for ratio in params['ratio_s']],
+                        colnames = ['Config '+config for config in params['mode_s']],
                         patterns = {'Bonferroni' : ':', 'Hochberg': '--', 'BH': '-'},
                         colors = {'Bonferroni' : '#A52422', 'Hochberg': '#F5E663', 'BH': '#47A8BD'},
-                        xticks = [4, 8, 16, 32, 64], yticks = [0, 0.2, 0.4, 0.6, 0.8, 1.0])
+                        xticks = params['m_s'], yticks = [0, 0.2, 0.4, 0.6, 0.8, 1.0])
         with open('results/processed/'+jsonname_ses, 'r') as file:
             ses = json.load(file)
             plot_BH_exp_ses_hist(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],
                                  filename='results/plots'+plotname_ses, plotname='Histogram of se',
                                  colors = {'Bonferroni' : '#A52422', 'Hochberg': '#F5E663', 'BH': '#47A8BD'},
-                                 plot_params={'alpha':0.5, 'bins':20})
+                                 transparency=0.5, bins=20)
             # plot_BH_exp(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],
             #             'results/plots'+plotname_ses, plotname='Plot of Power SE', rownames=None, colnames=None)
