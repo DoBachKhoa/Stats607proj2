@@ -1,4 +1,5 @@
 import math
+import json
 import numpy as np
 from scipy.stats import norm
 from methods import NormalMeanHypotheses, MultiTest
@@ -36,24 +37,20 @@ def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, sav
     return result
 
 if __name__ == '__main__':
-    L_s = [5., 10.]
-    m_s = [4, 8, 16, 32, 64]
-    ratio_s = ['0.00', '0.25', '0.50', '0.75']
-    num_rep = 2000
-    mode_s = ['D', 'E', 'I']
-    methods = ['Bonferroni', 'Hochberg', 'BH']
-    criterion = 'power'
-    alpha = 0.05
+    with open('params.json', 'r') as file:
+        params = json.load(file)
     print('=============== Begin simulation ===============')
-    print(' L_s: ', L_s)
-    print(' m_s: ', m_s)
-    print(' ratio_s: ', ratio_s)
-    print(' num_rep: ', num_rep)
-    print(' methods: ', methods)
-    print(f' criterion: {criterion}')
-    print(f' alpha: {alpha}')
+    print(' L_s: ', params['L_s'])
+    print(' m_s: ', params['m_s'])
+    print(' ratio_s: ', params['ratio_s'])
+    print(' num_rep: ', params['num_rep'])
+    print(' methods: ', params['methods'])
+    print(f" criterion: {params['criterion']}")
+    print(f" alpha: {params['alpha']}")
     print('================================================')
-    generator = generate_params_BH_exp(L_s, m_s, ratio_s, mode_s, methods)
+    generator = generate_params_BH_exp(params['L_s'], params['m_s'], params['ratio_s'], 
+                                       params['mode_s'], params['methods'])
     for (L, m, r, mode, method) in tqdm(list(generator)):
         m_0 = int(np.rint(m*float(r)).astype('int'))
-        simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=alpha, saving=True)
+        simulate_BH_exp(L, m_0, m, mode, params['num_rep'], method, params['criterion'], 
+                        alpha=params['alpha'], saving=True)

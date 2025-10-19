@@ -12,7 +12,7 @@ PROC_RESULT_DIR := $(RESULT_DIR)/processed # Processed data/summaries
 PLOT_RESULT_DIR := $(RESULT_DIR)/plots # Plots
 
 # Default target first
-all : test simulate analyze figures
+all : simulate analyze figures
 
 # Virtual environment
 $(VENV_DIR) : requirements.txt # check requirement changes
@@ -27,7 +27,7 @@ test : $(VENV_DIR) src/methods.py src/analyze.py
 	$(VENV_PY) -m pytest src/testcorrectness.py
 
 # Simulate 
-$(RAW_RESULT_DIR) : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py
+$(RAW_RESULT_DIR) : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py params.json
 	mkdir -p $(RESULT_DIR)
 	mkdir -p $(RAW_RESULT_DIR)
 	$(VENV_PY) src/simulation.py
