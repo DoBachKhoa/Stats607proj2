@@ -23,7 +23,8 @@ $(VENV_DIR) : requirements.txt # check requirement changes
 venv : $(VENV_DIR)
 
 # Run tests
-test : venv
+test : $(VENV_DIR)
+	$(VENV_PY) -m pytest src/testcorrectness.py
 
 # Simulate 
 $(RAW_RESULT_DIR) : $(VENV_DIR) src/analyze.py

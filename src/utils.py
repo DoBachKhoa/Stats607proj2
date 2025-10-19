@@ -12,7 +12,7 @@ def divide_0div0(numerator, denominator, alt_value=0):
     result[zero_divide_zero_mask] = alt_value
     return result
 
-def testing_measure(true_result, test_result, criteria=('power')):
+def compare_reject_result(true_result, test_result, criteria=('power')):
     '''
     Matches the ground truth which is a 1d array of 1's and 0's
     indicating not null and null hypotheses
@@ -21,7 +21,7 @@ def testing_measure(true_result, test_result, criteria=('power')):
     supported criteria are: 'power', 'type1', 'type2', 'fdr', 'm', 'm_0'
     'm' for the number of ground truth hypotheses
     'm_0' for the number of groud truth null hypotheses
-    true_result is 1d, test_result could be 1d or 2d; the row length must be the same
+    true_result and test_result could be 1d or 2d; the row length must be the same
     '''
     output = dict()
     m = true_result.shape[0]
