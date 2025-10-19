@@ -118,8 +118,9 @@ def generate_filename_BH_exp(L, m_0, m, mode, num_rep, method, criterion):
 def generate_jsonname_BH_exp(L):
     return f'exp_proceeded_output_means_L{L}.json', f'exp_proceeded_output_ses_L{L}.json'
 
-def generate_plotname_BH_exp(L):
-    return f'exp_plot_means_L{L}.png', f'exp_plot_ses_L{L}.png'
+def generate_plotname_BH_exp(L, pdf=False):
+    if not pdf: return f'exp_plot_means_L{L}.png', f'exp_plot_ses_L{L}.png'
+    return f'exp_plot_means_L{L}.pdf', f'exp_plot_ses_L{L}.pdf'
 
 def generate_params_BH_exp(L_s, m_s, ratio_s, mode_s, method_s):
     for L in L_s:
