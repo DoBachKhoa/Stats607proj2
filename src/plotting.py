@@ -34,6 +34,29 @@ def plot_BH_exp(results, ratio_s, mode_s, m_s, method_s,
             axes[-1][ind].set_xlabel(name)
     plt.tight_layout()
     plt.savefig(filename, bbox_inches='tight')
+    plt.close()
+
+def plot_BH_exp_ses_hist(results, ratio_s, mode_s, m_s, method_s,
+                         filename='histogram.png', plotname=None, colors=None, plot_params=dict()):
+    # Load data from dictionary `results`
+    m = len(ratio_s)
+    n = len(mode_s)
+    output = dict()
+    for ratio in ratio_s:
+        for mode in mode_s:
+            for method in method_s:
+                for num in results[ratio][mode][method]:
+                    output.setdefault(method, []).append(num)
+
+    # Plotting
+    for method in method_s:
+        if colors is not None: plot_params['color'] = colors[method]
+        plt.hist(output[method], label=method, **plot_params)
+    if plotname: plt.title(plotname)
+    plt.legend()
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.savefig(filename)
+    plt.close()
 
 if __name__ == '__main__':
     with open('params.json', 'r') as file:
@@ -50,7 +73,7 @@ if __name__ == '__main__':
     colors = ['#1E3888', '#47A8BD', '#F5E663', '#FFAD69', '#A52422']
     for L in params['L_s']:
         jsonname_means, jsonname_ses = generate_jsonname_BH_exp(L)
-        plotname_means, plotname_ses = generate_plotname_BH_exp(L)
+        plotname_means, plotname_ses = generate_plotname_BH_exp(L, pdf=True)
         with open('results/processed/'+jsonname_means, 'r') as file:
             means = json.load(file)
             plot_BH_exp(means, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'], 
@@ -63,5 +86,9 @@ if __name__ == '__main__':
                         xticks = [4, 8, 16, 32, 64], yticks = [0, 0.2, 0.4, 0.6, 0.8, 1.0])
         with open('results/processed/'+jsonname_ses, 'r') as file:
             ses = json.load(file)
-            plot_BH_exp(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],
-                        'results/plots'+plotname_ses, plotname='Plot of Power SE', rownames=None, colnames=None)
+            plot_BH_exp_ses_hist(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],
+                                 filename='results/plots'+plotname_ses, plotname='Histogram of se',
+                                 colors = {'Bonferroni' : '#A52422', 'Hochberg': '#F5E663', 'BH': '#47A8BD'},
+                                 plot_params={'alpha':0.5, 'bins':20})
+            # plot_BH_exp(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],
+            #             'results/plots'+plotname_ses, plotname='Plot of Power SE', rownames=None, colnames=None)
