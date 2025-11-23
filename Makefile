@@ -1,4 +1,5 @@
-.PHONY: all venv test simulate analyze figures clean
+.PHONY: all venv test simulate analyze figures \
+		clean clean-env clean-generated
 
 # Abbreviations
 PY := python3
@@ -28,29 +29,29 @@ test : $(VENV_DIR) src/methods.py src/analyze.py
 
 # Simulate 
 $(RAW_RESULT_DIR) : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py params.json
-	mkdir -p $(RESULT_DIR)
-	mkdir -p $(RAW_RESULT_DIR)
 	$(VENV_PY) -m src.simulation
 	touch $(RAW_RESULT_DIR)
 simulate : $(RAW_RESULT_DIR) 
 
 # Run analyze
 $(PROC_RESULT_DIR): $(RAW_RESULT_DIR) src/analyze.py
-	mkdir -p $(PROC_RESULT_DIR)
 	$(VENV_PY) -m src.analyze
 	touch $(PROC_RESULT_DIR)
 analyze : $(PROC_RESULT_DIR) 
 
 # Run plotting figures
 $(PLOT_RESULT_DIR): $(PROC_RESULT_DIR) src/plotting.py
-	mkdir -p $(PLOT_RESULT_DIR)
 	$(VENV_PY) -m src.plotting
 	touch $(PLOT_RESULT_DIR)
 figures : $(PLOT_RESULT_DIR)
 
 # Clean ups
-clean : 
+clean : clean-env clean-generated
+
+clean-venv : 
 	rm -rf $(VENV_DIR)
+
+clean-generated : 
 	rm -rf $(RESULT_DIR)
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete

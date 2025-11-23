@@ -1,3 +1,4 @@
+import os
 import math
 import json
 import numpy as np
@@ -5,6 +6,7 @@ from scipy.stats import norm
 from src.methods import NormalMeanHypotheses, MultiTest
 from src.utils import compare_reject_result, distribute_means_BH_exp, \
                       generate_filename_BH_exp, generate_params_BH_exp
+from src.constants import RAW_OUTPUT_DIR
 from tqdm import tqdm
 
 dict_methods = {
@@ -33,10 +35,11 @@ def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, sav
     # Save in csv
     if saving:
         filename = generate_filename_BH_exp(L, m_0, m, mode, num_rep, method, criterion)
-        np.save('results/raw/'+filename, result[criterion])
+        np.save(RAW_OUTPUT_DIR+filename, result[criterion])
     return result
 
 if __name__ == '__main__':
+    os.makedirs(RAW_OUTPUT_DIR, exist_ok=True)
     with open('params.json', 'r') as file:
         params = json.load(file)
     print('=============== Begin simulation ===============')
