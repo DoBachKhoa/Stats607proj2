@@ -67,10 +67,27 @@ def plot_BH_exp_ses_hist(results, ratio_s, mode_s, m_s, method_s,
     plt.savefig(filename)
     plt.close()
 
-if __name__ == '__main__':
+def main_plotting(filename='params.json', params=None):
+    '''
+    Main function take processed output and produce plots.
+    Will be run by the `if __name__ == '__main__'` of this script.
+
+    PARAMETERS
+    ----------
+    filename : str (default : 'params.json')
+        if params is None: load json file from filename as params.
+    params : Optional (dict) (default : None)
+        input parameter for the simulation.
+        if None: load json file from filename as params.
+
+    RETURNS
+    -------
+    Runtime record of the script
+    '''
     os.makedirs(PLOTTING_DIR, exist_ok=True)
-    with open('params.json', 'r') as file:
-        params = json.load(file)
+    if params is None:
+        with open(filename, 'r') as file:
+            params = json.load(file)
     print('=============== Begin plotting ===============')
     print(' L_s: ', params['L_s'])
     print(' m_s: ', params['m_s'])
@@ -102,3 +119,6 @@ if __name__ == '__main__':
                                  transparency=0.5, bins=20)
             # plot_BH_exp(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],
             #             'results/plots'+plotname_ses, plotname='Plot of Power SE', rownames=None, colnames=None)
+
+if __name__ == '__main__':
+    main_plotting()

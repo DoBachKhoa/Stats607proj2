@@ -7,10 +7,27 @@ from src.utils import mean_and_se, generate_params_BH_exp, \
                       generate_filename_BH_exp, generate_jsonname_BH_exp
 from src.constants import RAW_OUTPUT_DIR, PROCESSED_OUTPUT_DIR
 
-if __name__ == '__main__':
+def main_analyze(filename='params.json', params=None):
+    '''
+    Main function to analyze the raw output and use that to generate processed ones.
+    Will be run by the `if __name__ == '__main__'` of this script.
+
+    PARAMETERS
+    ----------
+    filename : str (default : 'params.json')
+        if params is None: load json file from filename as params.
+    params : Optional (dict) (default : None)
+        input parameter for the simulation.
+        if None: load json file from filename as params.
+
+    RETURNS
+    -------
+    Runtime record of the script
+    '''
     os.makedirs(PROCESSED_OUTPUT_DIR, exist_ok=True)
-    with open('params.json', 'r') as file:
-        params = json.load(file)
+    if params is None:
+        with open(filename, 'r') as file:
+            params = json.load(file)
     print('=============== Begin raw output summary ===============')
     print(' L_s: ', params['L_s'])
     print(' m_s: ', params['m_s'])
@@ -37,3 +54,6 @@ if __name__ == '__main__':
             json.dump(means, f_mean, indent=4)
         with open(PROCESSED_OUTPUT_DIR+jsonname_ses, 'w') as f_se:
             json.dump(ses, f_se, indent=4)
+
+if __name__ == '__main__':
+    main_analyze()

@@ -13,7 +13,8 @@ PROC_RESULT_DIR := $(RESULT_DIR)/processed # Processed data/summaries
 PLOT_RESULT_DIR := $(RESULT_DIR)/plots # Plots
 
 # Default target first
-all : simulate analyze figures
+all : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py src/run_experiment.py clean-generated
+	$(VENV_PY) -m src.run_experiment
 
 # Virtual environment
 $(VENV_DIR) : requirements.txt # check requirement changes

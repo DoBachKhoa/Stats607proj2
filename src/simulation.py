@@ -38,10 +38,27 @@ def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, sav
         np.save(RAW_OUTPUT_DIR+filename, result[criterion])
     return result
 
-if __name__ == '__main__':
+def main_simulation(filename='params.json', params=None):
+    '''
+    Main function to simulate and generate raw output.
+    Will be run by the `if __name__ == '__main__'` of this script.
+
+    PARAMETERS
+    ----------
+    filename : str (default : 'params.json')
+        if params is None: load json file from filename as params.
+    params : Optional (dict) (default : None)
+        input parameter for the simulation.
+        if None: load json file from filename as params.
+
+    RETURNS
+    -------
+    Runtime record of the script
+    '''
     os.makedirs(RAW_OUTPUT_DIR, exist_ok=True)
-    with open('params.json', 'r') as file:
-        params = json.load(file)
+    if params is None:
+        with open(filename, 'r') as file:
+            params = json.load(file)
     print('=============== Begin simulation ===============')
     print(' L_s: ', params['L_s'])
     print(' m_s: ', params['m_s'])
@@ -57,3 +74,6 @@ if __name__ == '__main__':
         m_0 = int(np.rint(m*float(r)).astype('int'))
         simulate_BH_exp(L, m_0, m, mode, params['num_rep'], method, params['criterion'], 
                         alpha=params['alpha'], saving=True)
+        
+if __name__ == '__main__':
+    main_simulation()
