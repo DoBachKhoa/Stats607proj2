@@ -2,7 +2,7 @@ import math
 import json
 import numpy as np
 import matplotlib.pyplot as plt
-from utils import generate_jsonname_BH_exp, generate_plotname_BH_exp
+from src.utils import generate_jsonname_BH_exp, generate_plotname_BH_exp
 
 def plot_BH_exp(results, ratio_s, mode_s, m_s, method_s, 
                 filename, plotname, rownames, colnames, 
@@ -84,7 +84,7 @@ if __name__ == '__main__':
         with open('results/processed/'+jsonname_means, 'r') as file:
             means = json.load(file)
             plot_BH_exp(means, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'], 
-                        filename = 'results/plots'+plotname_means,  
+                        filename = 'results/plots/'+plotname_means,  
                         plotname = 'Plot of Power as a function of number of hypotheses', 
                         rownames = [str(np.round(float(ratio)*100, 1))+'% null' for ratio in params['ratio_s']],
                         colnames = ['Config '+config for config in params['mode_s']],
@@ -94,7 +94,7 @@ if __name__ == '__main__':
         with open('results/processed/'+jsonname_ses, 'r') as file:
             ses = json.load(file)
             plot_BH_exp_ses_hist(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],
-                                 filename='results/plots'+plotname_ses, plotname='Histogram of se',
+                                 filename='results/plots/'+plotname_ses, plotname='Histogram of se',
                                  colors = {'Bonferroni' : '#A52422', 'Hochberg': '#F5E663', 'BH': '#47A8BD'},
                                  transparency=0.5, bins=20)
             # plot_BH_exp(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],

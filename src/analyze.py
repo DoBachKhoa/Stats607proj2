@@ -2,8 +2,8 @@ import math
 import json
 import numpy as np
 from tqdm import tqdm
-from utils import mean_and_se, generate_params_BH_exp, \
-                  generate_filename_BH_exp, generate_jsonname_BH_exp
+from src.utils import mean_and_se, generate_params_BH_exp, \
+                      generate_filename_BH_exp, generate_jsonname_BH_exp
 
 if __name__ == '__main__':
     with open('params.json', 'r') as file:

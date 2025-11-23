@@ -30,21 +30,21 @@ test : $(VENV_DIR) src/methods.py src/analyze.py
 $(RAW_RESULT_DIR) : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py params.json
 	mkdir -p $(RESULT_DIR)
 	mkdir -p $(RAW_RESULT_DIR)
-	$(VENV_PY) src/simulation.py
+	$(VENV_PY) -m src.simulation
 	touch $(RAW_RESULT_DIR)
 simulate : $(RAW_RESULT_DIR) 
 
 # Run analyze
 $(PROC_RESULT_DIR): $(RAW_RESULT_DIR) src/analyze.py
 	mkdir -p $(PROC_RESULT_DIR)
-	$(VENV_PY) src/analyze.py
+	$(VENV_PY) -m src.analyze
 	touch $(PROC_RESULT_DIR)
 analyze : $(PROC_RESULT_DIR) 
 
 # Run plotting figures
 $(PLOT_RESULT_DIR): $(PROC_RESULT_DIR) src/plotting.py
 	mkdir -p $(PLOT_RESULT_DIR)
-	$(VENV_PY) src/plotting.py
+	$(VENV_PY) -m src.plotting
 	touch $(PLOT_RESULT_DIR)
 figures : $(PLOT_RESULT_DIR)
 

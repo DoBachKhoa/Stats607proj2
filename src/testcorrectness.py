@@ -2,7 +2,7 @@ import pytest
 import random
 import numpy as np
 from methods import MultiTest
-from utils import divide_0div0, compare_reject_result
+from src.utils import divide_0div0, compare_reject_result
 
 # Import implemented functions
 

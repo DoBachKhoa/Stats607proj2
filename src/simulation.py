@@ -2,9 +2,9 @@ import math
 import json
 import numpy as np
 from scipy.stats import norm
-from methods import NormalMeanHypotheses, MultiTest
-from utils import compare_reject_result, distribute_means_BH_exp, \
-                  generate_filename_BH_exp, generate_params_BH_exp
+from src.methods import NormalMeanHypotheses, MultiTest
+from src.utils import compare_reject_result, distribute_means_BH_exp, \
+                      generate_filename_BH_exp, generate_params_BH_exp
 from tqdm import tqdm
 
 dict_methods = {
