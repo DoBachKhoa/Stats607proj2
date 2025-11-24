@@ -1,4 +1,5 @@
 import os
+import time
 import math
 import json
 import numpy as np
@@ -84,6 +85,7 @@ def main_plotting(filename='params.json', params=None):
     -------
     Runtime record of the script
     '''
+    start_time = time.perf_counter()
     os.makedirs(PLOTTING_DIR, exist_ok=True)
     if params is None:
         with open(filename, 'r') as file:
@@ -117,8 +119,7 @@ def main_plotting(filename='params.json', params=None):
                                  filename=f'{PLOTTING_DIR}/{plotname_ses}', plotname='Histogram of se',
                                  colors = colors,
                                  transparency=0.5, bins=20)
-            # plot_BH_exp(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],
-            #             'results/plots'+plotname_ses, plotname='Plot of Power SE', rownames=None, colnames=None)
+    return [['Plotting', time.perf_counter()-start_time]]
 
 if __name__ == '__main__':
     main_plotting()

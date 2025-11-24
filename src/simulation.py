@@ -1,4 +1,5 @@
 import os
+import time
 import math
 import json
 import numpy as np
@@ -29,7 +30,6 @@ def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, sav
     control_method = dict_methods[method]
     decision = control_method(p_values, alpha)
     ground_truth = np.array([0]*m_0+[1]*(m-m_0))
-    # print(ground_truth, ground_truth.shape, decision.shape, L, m_0, m, mode, ' AAA')
     result = compare_reject_result(ground_truth, decision)
     
     # Save in csv
@@ -55,6 +55,7 @@ def main_simulation(filename='params.json', params=None):
     -------
     Runtime record of the script
     '''
+    time1 = time.perf_counter()
     os.makedirs(RAW_OUTPUT_DIR, exist_ok=True)
     if params is None:
         with open(filename, 'r') as file:
@@ -70,10 +71,13 @@ def main_simulation(filename='params.json', params=None):
     print('================================================')
     generator = generate_params_BH_exp(params['L_s'], params['m_s'], params['ratio_s'], 
                                        params['mode_s'], params['methods'])
+    time2 = time.perf_counter()
     for (L, m, r, mode, method) in tqdm(list(generator)):
         m_0 = int(np.rint(m*float(r)).astype('int'))
         simulate_BH_exp(L, m_0, m, mode, params['num_rep'], method, params['criterion'], 
                         alpha=params['alpha'], saving=True)
+    time3 = time.perf_counter()
+    return [['Set ups', time2-time1], ['Main loop', time3-time2]]
         
 if __name__ == '__main__':
     main_simulation()
