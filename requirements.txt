@@ -3,3 +3,5 @@ matplotlib
 scipy
 tqdm
 pytest
+snakeviz
+joblib

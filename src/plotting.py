@@ -100,13 +100,15 @@ def main_plotting(filename='params.json', params=None):
     print(f" alpha: {params['alpha']}")
     print('==============================================')
     colors = {'Bonferroni' : '#A52422', 'Hochberg': '#F5E663', 'BH': '#47A8BD'}
+    if 'outdir' not in params: plotting_dir = PLOTTING_DIR
+    else: plotting_dir = f"results/{params['outdir']}"
     for L in params['L_s']:
         jsonname_means, jsonname_ses = generate_jsonname_BH_exp(L)
         plotname_means, plotname_ses = generate_plotname_BH_exp(L, pdf=True)
         with open(f'{PROCESSED_OUTPUT_DIR}/{jsonname_means}', 'r') as file:
             means = json.load(file)
             plot_BH_exp(means, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'], 
-                        filename = f'{PLOTTING_DIR}/{plotname_means}',  
+                        filename = f'{plotting_dir}/{plotname_means}',  
                         plotname = 'Plot of Power as a function of number of hypotheses', 
                         rownames = [str(np.round(float(ratio)*100, 1))+'% null' for ratio in params['ratio_s']],
                         colnames = ['Config '+config for config in params['mode_s']],
@@ -116,7 +118,7 @@ def main_plotting(filename='params.json', params=None):
         with open(f'{PROCESSED_OUTPUT_DIR}/{jsonname_ses}', 'r') as file:
             ses = json.load(file)
             plot_BH_exp_ses_hist(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],
-                                 filename=f'{PLOTTING_DIR}/{plotname_ses}', plotname='Histogram of se',
+                                 filename=f'{plotting_dir}/{plotname_ses}', plotname='Histogram of se',
                                  colors = colors,
                                  transparency=0.5, bins=20)
     return [['Plotting', time.perf_counter()-start_time]]

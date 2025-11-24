@@ -1,7 +1,7 @@
 import pytest
 import random
 import numpy as np
-from methods import MultiTest
+from src.methods import MultiTest
 from src.utils import divide_0div0, compare_reject_result
 
 # Import implemented functions
@@ -49,6 +49,40 @@ class TestMethodologyFunctionCorrectness:
                 output_sorted = np.sort(output)[::-1]
                 assert (np.abs(output-output_sorted) < 1e-9).all(), \
                        f'Method {method.__name__} with alpha {alpha} gives unexpected result.'
+    
+    def test_correct_BH_Hochberg(self):
+        '''
+        Test correctness of BH and Hochberg, for a general 1d case
+        '''
+        p_values = np.array([0.0001, 0.06, 0.0001, 0.0002, 0.1, 0.2, 0.04, 0.00001, 0.99])
+        alpha = 0.05
+        expected_output = np.array([[1, 0, 1, 1, 0, 0, 0, 1, 0]])
+        for method in [MultiTest.HochbergMethod,
+                       MultiTest.HochbergMethodFast,
+                       MultiTest.BHMethod,
+                       MultiTest.BHMethodFast]:
+            test_output = method(p_values, alpha)
+            assert (test_output == expected_output).all(), \
+                f'Method {method.__name__} gives {test_output} but expect {expected_output}'
+            
+    def test_correct_BH_Hochberg_2d(self):
+        '''
+        Test correctness of BH and Hochberg, for a general 2d case
+        '''
+        p_values = np.array([[0.0001, 0.06, 0.0001, 0.0002, 0.1, 0.2, 0.04, 0.00001, 0.99],
+                             [0.0009, 0.06, 0.0001, 0.0002, 0.1, 0.2, 0.00, 0.10001, 0.09],
+                             [0.0004, 0.06, 0.0401, 0.0002, 0.1, 0.2, 0.04, 0.00001, 0.49]])
+        alpha = 0.05
+        expected_output = np.array([[1, 0, 1, 1, 0, 0, 0, 1, 0],
+                                    [1, 0, 1, 1, 0, 0, 1, 0, 0],
+                                    [1, 0, 0, 1, 0, 0, 0, 1, 0]])
+        for method in [MultiTest.HochbergMethod,
+                       MultiTest.HochbergMethodFast,
+                       MultiTest.BHMethod,
+                       MultiTest.BHMethodFast]:
+            test_output = method(p_values, alpha)
+            assert (test_output == expected_output).all(), \
+                f'Method {method.__name__} gives {test_output} but expect {expected_output}'
 
 class TestUtilFunctionCorrectness:
     '''

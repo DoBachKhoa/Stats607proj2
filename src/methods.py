@@ -93,3 +93,27 @@ class MultiTest():
     @staticmethod
     def BHMethod(p_values, alpha):
         return MultiTest._applyMultipleTimes(p_values, alpha, MultiTest._BHSimple)
+    
+    @staticmethod
+    def HochbergMethodFast(p_values, alpha):
+        if len(p_values.shape) == 1: p_values = np.array(p_values).reshape(1, -1)
+        p_values_ = np.sort(np.asarray(p_values), axis=1)
+        s, m = p_values.shape
+        zeros_row = np.zeros((s, 1), dtype=p_values.dtype)
+        padded_pvals = np.hstack((zeros_row, p_values_))
+        thresh = (alpha / np.arange(m+1, 0, -1)).reshape(1, -1)
+        mask = (padded_pvals <= thresh+1e-9).astype('float') + (thresh/2)
+        pval_cutoffs = padded_pvals[np.arange(0, s), np.argmax(mask, axis=1).astype('int')]
+        return (p_values <= pval_cutoffs.reshape(-1, 1)).astype('int')
+
+    @staticmethod
+    def BHMethodFast(p_values, alpha):
+        if len(p_values.shape) == 1: p_values = np.array(p_values).reshape(1, -1)
+        p_values_ = np.sort(np.asarray(p_values), axis=1)
+        s, m = p_values.shape
+        zeros_row = np.zeros((s, 1), dtype=p_values.dtype)
+        padded_pvals = np.hstack((zeros_row, p_values_))
+        thresh = (alpha * np.arange(0, m+1) / m).reshape(1, -1)
+        mask = (padded_pvals <= thresh+1e-9).astype('float') + (thresh/2)
+        pval_cutoffs = padded_pvals[np.arange(0, s), np.argmax(mask, axis=1).astype('int')]
+        return (p_values <= pval_cutoffs.reshape(-1, 1)).astype('int')

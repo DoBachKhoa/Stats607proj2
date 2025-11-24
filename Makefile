@@ -1,4 +1,4 @@
-.PHONY: all venv test simulate analyze figures \
+.PHONY: all venv test simulate analyze figures profile\
 		clean clean-env clean-generated
 
 # Abbreviations
@@ -15,6 +15,11 @@ PLOT_RESULT_DIR := $(RESULT_DIR)/plots # Plots
 # Default target first
 all : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py src/run_experiment.py clean-generated
 	$(VENV_PY) -m src.run_experiment
+
+# Profiler
+profile : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py src/run_experiment.py clean-generated
+	$(VENV_PY) -m cProfile -o prof.pstats -m src.run_experiment
+	$(VENV_PY) -m snakeviz prof.pstats
 
 # Virtual environment
 $(VENV_DIR) : requirements.txt # check requirement changes
@@ -54,6 +59,7 @@ clean-venv :
 
 clean-generated : 
 	rm -rf $(RESULT_DIR)
+	find . -type f -name "prof.pstats" -delete
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
 	find . -type d -name ".pytest_cache"  -exec rm -rf {} +
