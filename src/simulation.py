@@ -35,7 +35,7 @@ def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, sav
     # Save in csv
     if saving:
         filename = generate_filename_BH_exp(L, m_0, m, mode, num_rep, method, criterion)
-        np.save(RAW_OUTPUT_DIR+filename, result[criterion])
+        np.save(f'{RAW_OUTPUT_DIR}/{filename}', result[criterion])
     return result
 
 def main_simulation(filename='params.json', params=None):

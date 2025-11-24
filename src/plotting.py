@@ -103,7 +103,7 @@ def main_plotting(filename='params.json', params=None):
     for L in params['L_s']:
         jsonname_means, jsonname_ses = generate_jsonname_BH_exp(L)
         plotname_means, plotname_ses = generate_plotname_BH_exp(L, pdf=True)
-        with open(PROCESSED_OUTPUT_DIR+jsonname_means, 'r') as file:
+        with open(f'{PROCESSED_OUTPUT_DIR}/{jsonname_means}', 'r') as file:
             means = json.load(file)
             plot_BH_exp(means, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'], 
                         filename = f'{PLOTTING_DIR}/{plotname_means}',  
@@ -113,7 +113,7 @@ def main_plotting(filename='params.json', params=None):
                         patterns = {'Bonferroni' : ':', 'Hochberg': '--', 'BH': '-'},
                         colors = colors,
                         xticks = params['m_s'], yticks = [0, 0.2, 0.4, 0.6, 0.8, 1.0])
-        with open(PROCESSED_OUTPUT_DIR+jsonname_ses, 'r') as file:
+        with open(f'{PROCESSED_OUTPUT_DIR}/{jsonname_ses}', 'r') as file:
             ses = json.load(file)
             plot_BH_exp_ses_hist(ses, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'],
                                  filename=f'{PLOTTING_DIR}/{plotname_ses}', plotname='Histogram of se',

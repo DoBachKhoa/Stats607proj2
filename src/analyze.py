@@ -52,15 +52,15 @@ def main_analyze(filename='params.json', params=None):
         for (_, m, r, mode, method) in tqdm(list(generator)):
             m_0 = int(np.rint(m*float(r)).astype('int'))
             filename = generate_filename_BH_exp(L, m_0, m, mode, params['num_rep'], method, params['criterion'])
-            test_result = np.array(np.load(RAW_OUTPUT_DIR+filename, allow_pickle=True))
+            test_result = np.array(np.load(f'{RAW_OUTPUT_DIR}/{filename}', allow_pickle=True))
             mean, se = mean_and_se(test_result)
             means.setdefault(r, dict()).setdefault(mode, dict()).setdefault(method, []).append(mean)
             ses.setdefault(r, dict()).setdefault(mode, dict()).setdefault(method, []).append(se)
         time3 = time.perf_counter()
         jsonname_means, jsonname_ses = generate_jsonname_BH_exp(L)
-        with open(PROCESSED_OUTPUT_DIR+jsonname_means, 'w') as f_mean:
+        with open(f'{PROCESSED_OUTPUT_DIR}/{jsonname_means}', 'w') as f_mean:
             json.dump(means, f_mean, indent=4)
-        with open(PROCESSED_OUTPUT_DIR+jsonname_ses, 'w') as f_se:
+        with open(f'{PROCESSED_OUTPUT_DIR}/{jsonname_ses}', 'w') as f_se:
             json.dump(ses, f_se, indent=4)
         time4 = time.perf_counter()
         time_setup += time2-time1
