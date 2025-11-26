@@ -30,6 +30,31 @@ def parse_arguments():
                         (default: params.json)', action='store', default='params.json')
     return parser.parse_args()
 
+def main_experiment(params, printing=True):
+    '''
+    Main function to run the experiment.
+    Will be run by the `if __name__ == '__main__'` of this script.
+    Takes in a dictionary of keyword-parameter pairs.
+    Returns the total runtime.
+    '''
+    # Running 3 steps of the experiment
+    timestart = time.perf_counter()
+    times = []
+    times.append(['Simulation', main_simulation(params=params, print_params=printing)])
+    times.append(['Process data', main_analyze(params=params, print_params=printing)])
+    times.append(['Plotting', main_plotting(params=params, print_params=printing)])
+
+    # Print out the time records
+    if printing:
+        print('Runtime decomposition:')
+        for step, step_times in times:
+            print(f'   Step [{step}]:')
+            for sub_step, step_time in step_times:
+                print(f'      [{sub_step}]: {np.round(step_time, 3)}s')
+
+    # Returns runtime
+    return time.perf_counter()-timestart
+
 if __name__ == '__main__':
 
     # Parsing input arguments
@@ -45,15 +70,5 @@ if __name__ == '__main__':
     params['n_jobs'] = args.n_jobs
     params['prob_alt_hypo'] = args.probabilistic
 
-    # Running 3 steps of the experiment
-    times = []
-    times.append(['Simulation', main_simulation(params=params)])
-    times.append(['Process data', main_analyze(params=params)])
-    times.append(['Plotting', main_plotting(params=params)])
-
-    # Print out the time records
-    print('Runtime decomposition:')
-    for step, step_times in times:
-        print(f'   Step [{step}]:')
-        for sub_step, step_time in step_times:
-            print(f'      [{sub_step}]: {np.round(step_time, 3)}s')
+    # Run experiment
+    main_experiment(params=params)

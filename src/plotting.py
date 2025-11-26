@@ -69,7 +69,7 @@ def plot_BH_exp_ses_hist(results, ratio_s, mode_s, m_s, method_s,
     plt.savefig(filename)
     plt.close()
 
-def main_plotting(filename='params.json', params=None):
+def main_plotting(filename='params.json', params=None, print_params=True):
     '''
     Main function take processed output and produce plots.
     Will be run by the `if __name__ == '__main__'` of this script.
@@ -81,28 +81,37 @@ def main_plotting(filename='params.json', params=None):
     params : Optional (dict) (default : None)
         input parameter for the simulation.
         if None: load json file from filename as params.
+    print_params : Optional (bool)
+        prints parameters
 
     RETURNS
     -------
     Runtime record of the script
     '''
+    # Loading parameters
     start_time = time.perf_counter()
     os.makedirs(PLOTTING_DIR, exist_ok=True)
     if params is None:
         with open(filename, 'r') as file:
             params = json.load(file)
-    print('=============== Begin plotting ===============')
-    print(' L_s: ', params['L_s'])
-    print(' m_s: ', params['m_s'])
-    print(' ratio_s: ', params['ratio_s'])
-    print(' methods: ', params['methods'])
-    print(' configs: ', params['mode_s'])
-    print(f" criterion: {params['criterion']}")
-    print(f" alpha: {params['alpha']}")
-    print('==============================================')
+    if print_params:
+        print('=============== Begin plotting ===============')
+        print(' L_s: ', params['L_s'])
+        print(' m_s: ', params['m_s'])
+        print(' ratio_s: ', params['ratio_s'])
+        print(' methods: ', params['methods'])
+        print(' configs: ', params['mode_s'])
+        print(f" criterion: {params['criterion']}")
+        print(f" alpha: {params['alpha']}")
+        print('==============================================')
     colors = {'Bonferroni' : '#A52422', 'Hochberg': '#F5E663', 'BH': '#47A8BD'}
+
+    # Directory handling
     if 'outdir' not in params: plotting_dir = PLOTTING_DIR
     else: plotting_dir = f"results/{params['outdir']}"
+    os.makedirs(plotting_dir, exist_ok=True)
+
+    # Main plotting loop
     for L in params['L_s']:
         jsonname_means, jsonname_ses = generate_jsonname_BH_exp(L)
         plotname_means, plotname_ses = generate_plotname_BH_exp(L, pdf=False)
@@ -122,6 +131,8 @@ def main_plotting(filename='params.json', params=None):
                                  filename=f'{plotting_dir}/{plotname_ses}', plotname='Histogram of se',
                                  colors = colors,
                                  transparency=0.5, bins=20)
+    
+    # Return time
     return [['Plotting', time.perf_counter()-start_time]]
 
 if __name__ == '__main__':

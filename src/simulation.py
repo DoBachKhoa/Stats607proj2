@@ -84,7 +84,7 @@ def _main_simulation_L(params, L=None):
                         vectorize=params['vectorize'], prob_alt_hypo=params['prob_alt_hypo'])
 
 
-def main_simulation(filename='params.json', params=None):
+def main_simulation(filename='params.json', params=None, print_params=True):
     '''
     Main function to simulate and generate raw output.
     Will be run by the `if __name__ == '__main__'` of this script.
@@ -96,6 +96,8 @@ def main_simulation(filename='params.json', params=None):
     params : Optional (dict) (default : None)
         input parameter for the simulation.
         if None: load json file from filename as params.
+    print_params : Optional (bool)
+        prints parameters
 
     RETURNS
     -------
@@ -106,15 +108,16 @@ def main_simulation(filename='params.json', params=None):
     if params is None:
         with open(filename, 'r') as file:
             params = json.load(file)
-    print('=============== Begin simulation ===============')
-    print(' L_s: ', params['L_s'])
-    print(' m_s: ', params['m_s'])
-    print(' ratio_s: ', params['ratio_s'])
-    print(' num_rep: ', params['num_rep'])
-    print(' methods: ', params['methods'])
-    print(f" criterion: {params['criterion']}")
-    print(f" alpha: {params['alpha']}")
-    print('================================================')
+    if print_params:
+        print('=============== Begin simulation ===============')
+        print(' L_s: ', params['L_s'])
+        print(' m_s: ', params['m_s'])
+        print(' ratio_s: ', params['ratio_s'])
+        print(' num_rep: ', params['num_rep'])
+        print(' methods: ', params['methods'])
+        print(f" criterion: {params['criterion']}")
+        print(f" alpha: {params['alpha']}")
+        print('================================================')
     time2 = time.perf_counter()
     if params['n_jobs'] not in [0, 1]:
         parallel_function = lambda L: _main_simulation_L(params=params, L=L)

@@ -1,5 +1,5 @@
-.PHONY: all venv test simulate analyze figures profile\
-		help baseline complexity benchmark parallel\
+.PHONY: all venv test simulate analyze figures\
+		profile help baseline complexity benchmark parallel\
 		clean clean-env clean-generated
 
 # Abbreviations
@@ -14,23 +14,26 @@ PROC_RESULT_DIR := $(RESULT_DIR)/processed # Processed data/summaries
 PLOT_RESULT_DIR := $(RESULT_DIR)/plots # Plots
 
 # Default target first
-all : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py src/run_experiment.py clean-generated
-	$(VENV_PY) -m src.run_experiment -u
+all : $(VENV_DIR) clean-generated
+	$(VENV_PY) -m src.run_experiment
 
-help : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py src/run_experiment.py clean-generated
+help : $(VENV_DIR) src/run_experiment.py
 	$(VENV_PY) -m src.run_experiment -h
 
-baseline :
+baseline : $(VENV_DIR) clean-generated
+	$(VENV_PY) -m src.run_experiment -u
 
 complexity :
 
-benchmark :
+benchmark : $(VENV_DIR) clean-generated
+	$(VENV_PY) -m src.run_benchmark
 
-parallel :
+parallel : $(VENV_DIR) clean-generated
+	$(VENV_PY) -m src.run_experiment -j 2
 
 # Profiler
-profile : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py src/run_experiment.py clean-generated
-	$(VENV_PY) -m cProfile -o prof.pstats -m src.run_experiment
+profile : $(VENV_DIR) clean-generated
+	$(VENV_PY) -m cProfile -o prof.pstats -m src.run_experiment -u
 	$(VENV_PY) -m snakeviz prof.pstats
 
 # Virtual environment
@@ -67,11 +70,11 @@ figures : $(PLOT_RESULT_DIR)
 clean : clean-env clean-generated
 
 clean-venv : 
-	rm -rf $(VENV_DIR)
+	@rm -rf $(VENV_DIR)
 
 clean-generated : 
-	rm -rf $(RESULT_DIR)
-	find . -type f -name "prof.pstats" -delete
-	find . -type f -name "*.pyc" -delete
-	find . -type d -name "__pycache__" -delete
-	find . -type d -name ".pytest_cache"  -exec rm -rf {} +
+	@rm -rf $(RESULT_DIR)
+	@find . -type f -name "prof.pstats" -delete
+	@find . -type f -name "*.pyc" -delete
+	@find . -type d -name "__pycache__" -delete
+	@find . -type d -name ".pytest_cache"  -exec rm -rf {} +

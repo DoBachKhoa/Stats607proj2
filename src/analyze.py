@@ -8,7 +8,7 @@ from src.utils import mean_and_se, generate_params_BH_exp, \
                       generate_filename_BH_exp, generate_jsonname_BH_exp
 from src.constants import RAW_OUTPUT_DIR, PROCESSED_OUTPUT_DIR
 
-def main_analyze(filename='params.json', params=None):
+def main_analyze(filename='params.json', params=None, print_params=True):
     '''
     Main function to analyze the raw output and use that to generate processed ones.
     Will be run by the `if __name__ == '__main__'` of this script.
@@ -20,6 +20,8 @@ def main_analyze(filename='params.json', params=None):
     params : Optional (dict) (default : None)
         input parameter for the simulation.
         if None: load json file from filename as params.
+    print_params : Optional (bool)
+        prints parameters
 
     RETURNS
     -------
@@ -30,15 +32,16 @@ def main_analyze(filename='params.json', params=None):
     if params is None:
         with open(filename, 'r') as file:
             params = json.load(file)
-    print('=============== Begin raw output summary ===============')
-    print(' L_s: ', params['L_s'])
-    print(' m_s: ', params['m_s'])
-    print(' ratio_s: ', params['ratio_s'])
-    print(' num_rep: ', params['num_rep'])
-    print(' methods: ', params['methods'])
-    print(f" criterion: {params['criterion']}")
-    print(f" alpha: {params['alpha']}")
-    print('=======================================================')
+    if print_params:
+        print('=============== Begin raw output summary ===============')
+        print(' L_s: ', params['L_s'])
+        print(' m_s: ', params['m_s'])
+        print(' ratio_s: ', params['ratio_s'])
+        print(' num_rep: ', params['num_rep'])
+        print(' methods: ', params['methods'])
+        print(f" criterion: {params['criterion']}")
+        print(f" alpha: {params['alpha']}")
+        print('=======================================================')
     time_setup = time.perf_counter()-time1
     time_process = 0
     time_save = 0
