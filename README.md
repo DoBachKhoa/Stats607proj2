@@ -1,6 +1,6 @@
 # Project 2 - Stats 607
 
-Submission repository for Project 2 - *Simulation study* of the course Stats 607 - *Programming and Numerical method in Statistics*.
+Submission repository for Project 2 - *Simulation study*, and Project 3 - *High-Performance simulation study*, of the course Stats 607 - *Programming and Numerical method in Statistics*.
 
 The repository implements the experiment in the paper *Controlling the False Discovery Rate: a Practical and Powerful
 Approach to Multiple Testing*, published in JRSSB 1995 by Benjamini and Hochberg (that introduces BH correction).
@@ -25,3 +25,11 @@ This gives us no information about how the two "linear" assignment schemes work,
 ### Simulation design
 
 Other than the afore-mentioned part that has to be re-intepreded, as far as we are aware, the design of the experiment reflects that of the one in the paper. The setting is a unit-variance z-test for normal hypotheses.
+
+### Additional features implemented for Project 3:
+
+* Bug fixes and code clean-ups from Project 2
+* Vectorized implementation of Hochberg and BH methods, and corresponding correctness checks.
+* Simple embarassingly paralelization of the experiment script, running multiple values of `L` at the same time (e.g., the values `L=5.0` and `L=10.0` could be ran in parallel instead of sequentially).
+* Scripts to benchmark and analyze complexity.
+* Additional make targets.

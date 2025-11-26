@@ -23,7 +23,8 @@ help : $(VENV_DIR) src/run_experiment.py
 baseline : $(VENV_DIR) clean-generated
 	$(VENV_PY) -m src.run_experiment -u
 
-complexity :
+complexity : $(VENV_DIR) clean-generated
+	$(VENV_PY) -m src.run_complexity -n 20,63,200,630,2000,6300,20000,63000
 
 benchmark : $(VENV_DIR) clean-generated
 	$(VENV_PY) -m src.run_benchmark
