@@ -47,6 +47,28 @@ class NormalMeanHypotheses(MultipleHypotheses):
         if size == None: return self.rng.normal(self.means, self.sigma, size=self.num_hypo)
         else: return self.rng.normal(self.means, self.sigma, size=(size, self.num_hypo))
 
+class NormalMeanHypothesesProbabilistic(MultipleHypotheses):
+    '''
+    Similar-variance 1D Normal distribution hypotheses
+    The null indicates that the mean is 0
+    Slight modification in that the alternative means are generated probabilistically each time
+    '''
+    def __init__(self, num_null, num_alt, alt_means, alt_probs, sigma=1., rng=None):
+        num_hypo = num_null + num_alt
+        super().__init__(num_hypo, num_null, rng = rng)
+        self.means = np.array([0.]*num_null+list(alt_means))
+        self.alt_means = np.array(alt_means)
+        self.alt_probs = np.array(alt_probs)
+        self.sigma = sigma
+
+    def generate_data(self, size=None):
+        means_alt = np.random.choice(a=self.alt_means, size=self.num_alt if size is None else size*self.num_alt, \
+                                    replace=True, p=self.alt_probs)
+        if size is None: means = np.hstack((np.zeros((self.num_null, )), means_alt))
+        else: means = np.hstack((np.zeros((size, self.num_null)), means_alt.reshape(size, self.num_alt)))
+        output = np.random.normal(means, self.sigma)
+        return output
+
 
 class MultiTest():
     '''

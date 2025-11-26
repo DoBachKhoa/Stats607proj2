@@ -25,6 +25,7 @@ def plot_BH_exp(results, ratio_s, mode_s, m_s, method_s,
                     if i != m-1: axes[i][j].set_xticks([])
                     else: axes[i][j].set_xticks(list(range(length)), xticks)
                 if yticks is not None:
+                    axes[i][j].set_ylim(yticks[0]-0.05, yticks[-1]+0.05)
                     if j != 0: axes[i][j].set_yticks([])
                     else: axes[i][j].set_yticks(yticks)
     axes[0][0].legend()
@@ -104,7 +105,7 @@ def main_plotting(filename='params.json', params=None):
     else: plotting_dir = f"results/{params['outdir']}"
     for L in params['L_s']:
         jsonname_means, jsonname_ses = generate_jsonname_BH_exp(L)
-        plotname_means, plotname_ses = generate_plotname_BH_exp(L, pdf=True)
+        plotname_means, plotname_ses = generate_plotname_BH_exp(L, pdf=False)
         with open(f'{PROCESSED_OUTPUT_DIR}/{jsonname_means}', 'r') as file:
             means = json.load(file)
             plot_BH_exp(means, params['ratio_s'], params['mode_s'], params['m_s'], params['methods'], 

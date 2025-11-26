@@ -4,7 +4,7 @@ import json
 import numpy as np
 from scipy.stats import norm
 from joblib import Parallel, delayed
-from src.methods import NormalMeanHypotheses, MultiTest
+from src.methods import NormalMeanHypotheses, NormalMeanHypothesesProbabilistic, MultiTest
 from src.utils import compare_reject_result, distribute_means_BH_exp, \
                       generate_filename_BH_exp, generate_params_BH_exp
 from src.constants import RAW_OUTPUT_DIR
@@ -22,13 +22,25 @@ dict_methods_fast = {
     'BH':MultiTest.BHMethodFast
 }
 
+def probabilistic_alt_distribution(L, mode):
+    a = np.array([L/4., L/2., 3*L/4., L])
+    if   mode == 'D': p = np.array([.4, .3, .2, .1])
+    elif mode == 'E': p = np.array([.25, .25, .25, .25])
+    elif mode == 'I': p = np.array([.1, .2, .3, .4])
+    else: raise ValueError(f"Invalid mode in put: {mode}")
+    return a, p
+
 def simulate_BH_exp(L, m_0, m, mode, num_rep, method, criterion, alpha=0.05, saving=True, \
-                    vectorize=False, seed=17):
+                    vectorize=False, prob_alt_hypo=True, seed=17):
     
     # Generate data
     rng = np.random.default_rng(seed=seed)
-    alt_means = distribute_means_BH_exp(m-m_0, L, mode)
-    generator = NormalMeanHypotheses(m_0, alt_means, sigma=1., rng=rng)
+    if not prob_alt_hypo:
+        alt_means = distribute_means_BH_exp(m-m_0, L, mode)
+        generator = NormalMeanHypotheses(m_0, alt_means, sigma=1., rng=rng)
+    else:
+        a, p = probabilistic_alt_distribution(L, mode)
+        generator = NormalMeanHypothesesProbabilistic(m_0, num_alt=m-m_0, alt_means=a, alt_probs=p, rng=rng)
     test = lambda data: 1-2*np.abs(norm.cdf(data)-0.5)
     p_values = generator.generate_p_values(test, size=num_rep)
 
@@ -69,7 +81,7 @@ def _main_simulation_L(params, L=None):
         m_0 = int(np.rint(m*float(r)).astype('int'))
         simulate_BH_exp(l, m_0, m, mode, params['num_rep'], method, params['criterion'], 
                         alpha=params['alpha'], saving=True, seed=params['seed'],
-                        vectorize=params['vectorize']==1)
+                        vectorize=params['vectorize'], prob_alt_hypo=params['prob_alt_hypo'])
 
 
 def main_simulation(filename='params.json', params=None):

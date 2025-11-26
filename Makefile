@@ -1,4 +1,5 @@
 .PHONY: all venv test simulate analyze figures profile\
+		help baseline complexity benchmark parallel\
 		clean clean-env clean-generated
 
 # Abbreviations
@@ -14,7 +15,18 @@ PLOT_RESULT_DIR := $(RESULT_DIR)/plots # Plots
 
 # Default target first
 all : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py src/run_experiment.py clean-generated
-	$(VENV_PY) -m src.run_experiment
+	$(VENV_PY) -m src.run_experiment -u
+
+help : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py src/run_experiment.py clean-generated
+	$(VENV_PY) -m src.run_experiment -h
+
+baseline :
+
+complexity :
+
+benchmark :
+
+parallel :
 
 # Profiler
 profile : $(VENV_DIR) src/simulation.py src/methods.py src/analyze.py src/run_experiment.py clean-generated

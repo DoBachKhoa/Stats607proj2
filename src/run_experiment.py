@@ -1,18 +1,49 @@
 import sys
 import json
 import time
+import argparse
 import numpy as np
 from src.simulation import main_simulation
 from src.analyze import main_analyze
 from src.plotting import main_plotting
 
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--seed', '-s', help='Experiment randomization seed (default: 17)', 
+                        action='store', default=17)
+    parser.add_argument('--alpha', '-a', help='P value threshold (default: 0.05)', action='store',
+                         default=0.05)
+    parser.add_argument('--outdir', '-o', help='Output directory in `results/` (default: plots)', 
+                        action='store', default='plots')
+    parser.add_argument('--num_rep', '-n', help='Experiment sample size (default: 20000)', 
+                        action='store', default=20000)
+    parser.add_argument('--n_jobs', '-j', help='Number of thres to use (default: 1 - unparallel)', 
+                        action='store', default=1)
+    parser.add_argument('--unvectorized', '-u', help='Option to run unvectorized baseline', 
+                        action='store_true')
+    parser.add_argument('--probabilistic', '-p', help='Run probabilistic alt. hypo. generation \
+                        instead of deterministic one', action='store_true')
+    parser.add_argument('--criterion', '-c', help='Performance criterion (default: power)',
+                        action='store', default='power')
+    parser.add_argument('--infile', '-i', help='Input json file for experiment parameters \
+                        that will be plotted: L_s, m_s, ratio_s, mode_s, and methods \
+                        (default: params.json)', action='store', default='params.json')
+    return parser.parse_args()
+
 if __name__ == '__main__':
 
-    # Pharsing parameters
-    params_file = 'params.json'
-    if len(sys.argv) > 1: params_file = str(sys.argv[1])
-    with open(params_file, 'r') as file:
+    # Parsing input arguments
+    args = parse_arguments()
+    with open(args.infile, 'r') as file:
         params = json.load(file)
+    params['seed'] = args.seed
+    params['num_rep'] = args.num_rep
+    params['criterion'] = args.criterion
+    params['alpha'] = args.alpha
+    params['outdir'] = args.outdir
+    params['vectorize'] = not args.unvectorized
+    params['n_jobs'] = args.n_jobs
+    params['prob_alt_hypo'] = args.probabilistic
 
     # Running 3 steps of the experiment
     times = []
